@@ -6,14 +6,80 @@ import (
 	"net/http"
 )
 
-// GetCveListPayload is the payload type of the cve service getCveList method.
-type GetCveListPayload struct {
+// GetCveDetail get CveDetail
+// https://doc.vuls.biz/#/cve/cve#getCveDetail
+func (c *Client) GetCveDetail(prm GetCveDetailParam) (*Cve, error) {
+	req, err := http.NewRequest("GET", c.urlFor(fmt.Sprintf("/v1/cve/%s", prm.CveID)).String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.Request(req)
+	defer closeResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+	var cve Cve
+	err = json.NewDecoder(resp.Body).Decode(&cve)
+	if err != nil {
+		return nil, err
+	}
+	return &cve, err
+}
+
+// GetCveList get a list of CVE
+// https://doc.vuls.biz/#/cve/cve#getCveDetail
+func (c *Client) GetCveList(prm GetCveListParam) (*PagingCves, error) {
+	path := "/v1/cves"
+	req, err := http.NewRequest("GET", c.urlFor(path).String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	q := c.BaseURL.Query()
+	if 0 < prm.Page {
+		q.Set("page", fmt.Sprint(prm.Page))
+	}
+	if 0 < prm.Limit {
+		q.Set("limit", fmt.Sprint(prm.Limit))
+	}
+	if 0 < prm.Offset {
+		q.Set("offset", fmt.Sprint(prm.Offset))
+	}
+	if prm.FilterServerID != nil {
+		q.Set("filterServerID", fmt.Sprint(*prm.FilterServerID))
+	}
+	if prm.FilterRoleID != nil {
+		q.Set("filterRoleID", fmt.Sprint(*prm.FilterRoleID))
+	}
+	if prm.FilterPkgID != nil {
+		q.Set("filterPkgID", fmt.Sprint(*prm.FilterPkgID))
+	}
+	if prm.FilterCpeID != nil {
+		q.Set("filterCpeID", fmt.Sprint(*prm.FilterCpeID))
+	}
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := c.Request(req)
+	defer closeResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+	var cves PagingCves
+	err = json.NewDecoder(resp.Body).Decode(&cves)
+	if err != nil {
+		return nil, err
+	}
+	return &cves, err
+}
+
+// GetCveListParam is the payload type of the cve service getCveList method.
+// https://doc.vuls.biz/#/cve/cve#getCveList
+type GetCveListParam struct {
 	// Page Number
 	Page uint
 	// Limit
 	Limit uint
-	// flag of onlyActiveCve
-	OnlyActiveCve bool
+	// Offset
+	Offset uint
 	// ServerID filter
 	FilterServerID *int
 	// ServerRoleID filter
@@ -32,9 +98,9 @@ type PagingCves struct {
 	Cves []*Cve
 }
 
-// GetCveDetailPayload is the payload type of the cve service getCveDetail
+// GetCveDetailParam is the payload type of the cve service getCveDetail
 // method.
-type GetCveDetailPayload struct {
+type GetCveDetailParam struct {
 	// Cve ID
 	CveID string
 }
@@ -56,7 +122,7 @@ type Cve struct {
 	// maxV3 of cve
 	MaxV3 float64
 	// cwes of cve
-	Cwes []*Cwe
+	Cwes []*Cwe `json:",omitempty"`
 	// Title of cve
 	Title string
 	// Flag of active cve
@@ -68,15 +134,15 @@ type Cve struct {
 	// isOwaspTopTen2017 of cve
 	IsOwaspTopTen2017 bool
 	// tmpMetricV2 of cve
-	TmpMetricV2 *TmpMetric
+	TmpMetricV2 *TmpMetric `json:",omitempty"`
 	// tmpMetricV3 of cve
-	TmpMetricV3 *TmpMetric
+	TmpMetricV3 *TmpMetric `json:",omitempty"`
 	// secMetric of cve
-	SecMetrics []*SecMetric
+	SecMetrics []*SecMetric `json:",omitempty"`
 	// envMetricV2 of cve
-	EnvMetricV2s []*EnvMetricV2
+	EnvMetricV2s []*EnvMetricV2 `json:",omitempty"`
 	// envMetricV3 of cve
-	EnvMetricV3s []*EnvMetricV3
+	EnvMetricV3s []*EnvMetricV3 `json:",omitempty"`
 	// serverOsFamilies of cve
 	ServerOsFamilies []string
 	// cvss of cve
@@ -197,23 +263,4 @@ type EnvMetricV3 struct {
 	CreatedAt string
 	// updated time
 	UpdatedAt string
-}
-
-// GetCveDetail get CveDetail
-func (c *Client) GetCveDetail(prm GetCveDetailPayload) (*Cve, error) {
-	req, err := http.NewRequest("GET", c.urlFor(fmt.Sprintf("/v1/cve/"+prm.CveID)).String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := c.Request(req)
-	defer closeResponse(resp)
-	if err != nil {
-		return nil, err
-	}
-	var cve Cve
-	err = json.NewDecoder(resp.Body).Decode(&cve)
-	if err != nil {
-		return nil, err
-	}
-	return &cve, err
 }
