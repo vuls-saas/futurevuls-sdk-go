@@ -8,7 +8,7 @@ import (
 
 // GetTaskDetail get TaskDetail
 // https://doc.2119e7c929.vuls.biz/#/task
-func (c *Client) GetTaskDetail(prm GetTaskDetailPayload) (*Task, error) {
+func (c *Client) GetTaskDetail(prm GetTaskDetailParam) (*Task, error) {
 	req, err := http.NewRequest("GET", c.urlFor(fmt.Sprintf("/v1/task/%d", prm.TaskID)).String(), nil)
 	if err != nil {
 		return nil, err
@@ -28,7 +28,7 @@ func (c *Client) GetTaskDetail(prm GetTaskDetailPayload) (*Task, error) {
 
 // UpdateTask updates Task
 // https://doc.2119e7c929.vuls.biz/#/task
-func (c *Client) UpdateTask(prm UpdateTaskPayload) (*Task, error) {
+func (c *Client) UpdateTask(prm UpdateTaskParam) (*Task, error) {
 	resp, err := c.PutJSON(fmt.Sprintf("/v1/task/%d", prm.TaskID), prm)
 	defer closeResponse(resp)
 	if err != nil {
@@ -44,7 +44,7 @@ func (c *Client) UpdateTask(prm UpdateTaskPayload) (*Task, error) {
 
 // GetTaskList get a list of tasks
 // https://doc.2119e7c929.vuls.biz/#/task
-func (c *Client) GetTaskList(prm GetTaskListPayload) (*PagingTasks, error) {
+func (c *Client) GetTaskList(prm GetTaskListParam) (*PagingTasks, error) {
 	req, err := http.NewRequest("GET", c.urlFor("/v1/tasks").String(), nil)
 	if err != nil {
 		return nil, err
@@ -105,9 +105,9 @@ func (c *Client) GetTaskList(prm GetTaskListPayload) (*PagingTasks, error) {
 	return &tasks, err
 }
 
-// GetTaskListPayload is the payload type of the task service getTaskList
+// GetTaskListParam is the payload type of the task service getTaskList
 // method.
-type GetTaskListPayload struct {
+type GetTaskListParam struct {
 	// api key auth
 	Key *string
 	// Page Number
@@ -146,9 +146,9 @@ type PagingTasks struct {
 	Tasks []*Task
 }
 
-// GetTaskDetailPayload is the payload type of the task service getTaskDetail
+// GetTaskDetailParam is the payload type of the task service getTaskDetail
 // method.
-type GetTaskDetailPayload struct {
+type GetTaskDetailParam struct {
 	// api key auth
 	Key *string
 	// Task ID
@@ -210,8 +210,8 @@ type Task struct {
 	UpdatedAt string
 }
 
-// UpdateTaskPayload is the payload type of the task service updateTask method.
-type UpdateTaskPayload struct {
+// UpdateTaskParam is the payload type of the task service updateTask method.
+type UpdateTaskParam struct {
 	// api key auth
 	Key *string
 	// Task ID
@@ -226,52 +226,6 @@ type UpdateTaskPayload struct {
 	Priority *string
 	// applyingPatchOn (YYYY-MM-DD) UTC
 	ApplyingPatchOn *string
-}
-
-// Server describes a server
-type Server struct {
-	// ID of server
-	ID int `json:"id"`
-	// UUID of server
-	ServerUUID string
-	// UUID of server
-	HostUUID string
-	// Name of server
-	ServerName string
-	// ID of server role
-	ServerroleID int
-	// Name of server role
-	ServerroleName string
-	// OS Name of server
-	OsFamily string
-	// OS Version of server
-	OsVersion string
-	// Whether server needs kernel restart
-	NeedKernelRestart bool
-	// default user ID of server
-	DefaultUserID *int
-	// default user name of server
-	DefaultUserName *string
-	// last scanned time of server
-	LastScannedAt *string `json:",omitempty"`
-	// last uploaded time of server
-	LastUploadedAt *string `json:",omitempty"`
-	// tags is list of server tag
-	Tags []*ServerTag `json:",omitempty"`
-	// tasks of server
-	Tasks []*ChildTask `json:",omitempty"`
-	// crated time of server
-	CreatedAt string
-	// updated time of server
-	UpdatedAt string
-}
-
-// ServerTag describes a server tag
-type ServerTag struct {
-	// ID of server tag
-	ID int
-	// Name of server tag
-	Name string
 }
 
 // ChildTask describes a child task
