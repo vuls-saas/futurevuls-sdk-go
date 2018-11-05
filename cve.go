@@ -29,8 +29,7 @@ func (c *Client) GetCveDetail(prm GetCveDetailParam) (*Cve, error) {
 // GetCveList get a list of CVE
 // https://doc.vuls.biz/#/cve/cve#getCveDetail
 func (c *Client) GetCveList(prm GetCveListParam) (*PagingCves, error) {
-	path := "/v1/cves"
-	req, err := http.NewRequest("GET", c.urlFor(path).String(), nil)
+	req, err := http.NewRequest("GET", c.urlFor("/v1/cves").String(), nil)
 	if err != nil {
 		return nil, err
 	}

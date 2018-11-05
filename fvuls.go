@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -110,6 +111,15 @@ func (c *Client) PostJSON(path string, payload interface{}) (*http.Response, err
 func (c *Client) PutJSON(path string, payload interface{}) (*http.Response, error) {
 	return c.requestJSON("PUT", path, payload)
 
+}
+
+func (c *Client) toJSON(src interface{}) string {
+	var body bytes.Buffer
+	err := json.NewEncoder(&body).Encode(src)
+	if err != nil {
+		panic(err)
+	}
+	return strings.TrimSpace(body.String())
 }
 
 func (c *Client) requestJSON(method string, path string, payload interface{}) (*http.Response, error) {
