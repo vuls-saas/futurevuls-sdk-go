@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 )
 
-// APIError represents the error type from Mackerel API.
+// APIError represents the error type from FutureVuls API.
 type APIError struct {
 	StatusCode int
 	Message    string

@@ -7,7 +7,7 @@ import (
 )
 
 // GetTaskDetail get TaskDetail
-// https://doc.2119e7c929.vuls.biz/#/task
+// https://doc.vuls.biz/#/task
 func (c *Client) GetTaskDetail(prm GetTaskDetailParam) (*Task, error) {
 	req, err := http.NewRequest("GET", c.urlFor(fmt.Sprintf("/v1/task/%d", prm.TaskID)).String(), nil)
 	if err != nil {
@@ -27,7 +27,7 @@ func (c *Client) GetTaskDetail(prm GetTaskDetailParam) (*Task, error) {
 }
 
 // UpdateTask updates Task
-// https://doc.2119e7c929.vuls.biz/#/task
+// https://doc.vuls.biz/#/task
 func (c *Client) UpdateTask(prm UpdateTaskParam) (*Task, error) {
 	resp, err := c.PutJSON(fmt.Sprintf("/v1/task/%d", prm.TaskID), prm)
 	defer closeResponse(resp)
@@ -43,7 +43,7 @@ func (c *Client) UpdateTask(prm UpdateTaskParam) (*Task, error) {
 }
 
 // GetTaskList get a list of tasks
-// https://doc.2119e7c929.vuls.biz/#/task
+// https://doc.vuls.biz/#/task
 func (c *Client) GetTaskList(prm GetTaskListParam) (*PagingTasks, error) {
 	req, err := http.NewRequest("GET", c.urlFor("/v1/tasks").String(), nil)
 	if err != nil {

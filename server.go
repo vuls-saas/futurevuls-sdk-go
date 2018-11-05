@@ -7,7 +7,7 @@ import (
 )
 
 // GetServerDetail get TaskDetail
-// https://doc.2119e7c929.vuls.biz/#/server
+// https://doc.vuls.biz/#/server
 func (c *Client) GetServerDetail(prm GetServerDetailParam) (*Server, error) {
 	req, err := http.NewRequest("GET", c.urlFor(fmt.Sprintf("/v1/server/%s", prm.ServerID)).String(), nil)
 	if err != nil {
@@ -27,7 +27,7 @@ func (c *Client) GetServerDetail(prm GetServerDetailParam) (*Server, error) {
 }
 
 // GetServerList get a list of servers
-// https://doc.2119e7c929.vuls.biz/#/servers
+// https://doc.vuls.biz/#/servers
 func (c *Client) GetServerList(prm GetServerListParam) (*PagingServers, error) {
 	req, err := http.NewRequest("GET", c.urlFor("/v1/servers").String(), nil)
 	if err != nil {
@@ -65,7 +65,7 @@ func (c *Client) GetServerList(prm GetServerListParam) (*PagingServers, error) {
 }
 
 // UpdateServer updates Server
-// https://doc.2119e7c929.vuls.biz/#/server
+// https://doc.vuls.biz/#/server
 func (c *Client) UpdateServer(prm UpdateServerParam) (*Server, error) {
 	resp, err := c.PutJSON(fmt.Sprintf("/v1/server/%d", prm.ServerID), prm)
 	defer closeResponse(resp)
@@ -81,7 +81,7 @@ func (c *Client) UpdateServer(prm UpdateServerParam) (*Server, error) {
 }
 
 // DeleteServer delete server
-// https://doc.2119e7c929.vuls.biz/#/server
+// https://doc.vuls.biz/#/server
 func (c *Client) DeleteServer(prm DeleteServerParam) error {
 	req, err := http.NewRequest("DELETE", c.urlFor(fmt.Sprintf("/v1/server/%d", prm.ServerID)).String(), nil)
 	if err != nil {
