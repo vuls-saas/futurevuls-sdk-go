@@ -105,6 +105,38 @@ func (c *Client) GetTaskList(prm GetTaskListParam) (*PagingTasks, error) {
 	return &tasks, err
 }
 
+// AddTaskComment add task comment
+// https://doc.vuls.biz/#/task
+func (c *Client) AddTaskComment(prm AddTaskCommentParam) (*Task, error) {
+	resp, err := c.PostJSON(fmt.Sprintf("/v1/task/%d/comment", prm.TaskID), prm)
+	defer closeResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+	var task Task
+	err = json.NewDecoder(resp.Body).Decode(&task)
+	if err != nil {
+		return nil, err
+	}
+	return &task, err
+}
+
+// UpdateTaskIgnore upate task ignore
+// https://doc.vuls.biz/#/task
+func (c *Client) UpdateTaskIgnore(prm UpdateTaskIgnoreParam) (*Task, error) {
+	resp, err := c.PutJSON(fmt.Sprintf("/v1/task/%d/ignore", prm.TaskID), prm)
+	defer closeResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+	var task Task
+	err = json.NewDecoder(resp.Body).Decode(&task)
+	if err != nil {
+		return nil, err
+	}
+	return &task, err
+}
+
 // GetTaskListParam is the payload type of the task service getTaskList
 // method.
 type GetTaskListParam struct {
@@ -355,4 +387,27 @@ type DetectionTool struct {
 	Name string
 	// PatchAppliedAt
 	PatchAppliedAt *string
+}
+
+// AddTaskCommentParam is the payload type of the task service addTaskComment
+// method.
+type AddTaskCommentParam struct {
+	// api key auth
+	Key *string
+	// Task ID
+	TaskID int
+	// comment content
+	CommentContent string
+}
+
+// UpdateTaskIgnoreParam is the payload type of the task service
+// updateTaskIgnore method.
+type UpdateTaskIgnoreParam struct {
+	// api key auth
+	Key *string
+	// Task ID
+	TaskID int
+	// ignore until.
+	//"nothing", "pkg_fix", "forever", "exploit", "vector":
+	IgnoreUntil string
 }

@@ -17,23 +17,23 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	task, err := client.GetTaskDetail(fvuls.GetTaskDetailParam{
-		TaskID: 556574,
-	})
-	if err != nil {
-		panic(err)
-	}
-	pp.Println(task)
+	// task, err := client.GetTaskDetail(fvuls.GetTaskDetailParam{
+	// TaskID: 556574,
+	// })
+	// if err != nil {
+	// panic(err)
+	// }
+	// pp.Println(task)
 
-	pri := "high"
-	t, err := client.UpdateTask(fvuls.UpdateTaskParam{
-		TaskID:   556574,
-		Priority: &pri,
-	})
-	if err != nil {
-		panic(err)
-	}
-	pp.Println(t)
+	// pri := "high"
+	// t, err := client.UpdateTask(fvuls.UpdateTaskParam{
+	// TaskID:   556574,
+	// Priority: &pri,
+	// })
+	// if err != nil {
+	// panic(err)
+	// }
+	// pp.Println(t)
 
 	// serverID := 9315
 	// roleID := 105
@@ -63,4 +63,24 @@ func main() {
 	// }
 	// pp.Println(tasks)
 	// pp.Println(len(tasks.Tasks))
+
+	//-- add comments
+	// t, err := client.AddTaskComment(fvuls.AddTaskCommentParam{
+	// TaskID:         556574,
+	// CommentContent: "commentおupdateしますた",
+	// })
+	// if err != nil {
+	// panic(err)
+	// }
+	// pp.Println(t)
+
+	//-- set ignore
+	t, err := client.UpdateTaskIgnore(fvuls.UpdateTaskIgnoreParam{
+		TaskID:      556574,
+		IgnoreUntil: "vector",
+	})
+	if err != nil {
+		panic(err)
+	}
+	pp.Println(t)
 }
