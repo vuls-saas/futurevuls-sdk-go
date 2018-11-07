@@ -76,7 +76,7 @@ func (c *Client) GetTaskList(prm GetTaskListParam) (*PagingTasks, error) {
 		q.Set("filterSubUserIDs", fmt.Sprint(p))
 	}
 	if prm.FilterCveID != nil {
-		q.Set("filterCveID", c.toJSON(*prm.FilterCveID))
+		q.Set("filterCveID", fmt.Sprint(*prm.FilterCveID))
 	}
 	if prm.FilterServerID != nil {
 		q.Set("filterServerID", fmt.Sprint(*prm.FilterServerID))
@@ -103,6 +103,73 @@ func (c *Client) GetTaskList(prm GetTaskListParam) (*PagingTasks, error) {
 		return nil, err
 	}
 	return &tasks, err
+}
+
+// GetAllTaskList get a list of tasks
+// https://doc.vuls.biz/#/task
+func (c *Client) GetAllTaskList(prm GetTaskListParam) ([]*Task, error) {
+	req, err := http.NewRequest("GET", c.urlFor("/v1/tasks").String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	q := c.BaseURL.Query()
+	for _, p := range prm.FilterStatus {
+		q.Set("filterStatus", p)
+	}
+	for _, p := range prm.FilterPriority {
+		q.Set("filterPriority", p)
+	}
+	if prm.FilterIgnore != nil {
+		q.Set("filterIgnore", c.toJSON(prm.FilterIgnore))
+	}
+	for _, p := range prm.FilterMainUserIDs {
+		q.Set("filterMainUserIDs", fmt.Sprint(p))
+	}
+	for _, p := range prm.FilterSubUserIDs {
+		// q.Set("filterSubUserIDs", c.toJSON(prm.FilterSubUserIDs))
+		q.Set("filterSubUserIDs", fmt.Sprint(p))
+	}
+	if prm.FilterCveID != nil {
+		q.Set("filterCveID", fmt.Sprint(*prm.FilterCveID))
+	}
+	if prm.FilterServerID != nil {
+		q.Set("filterServerID", fmt.Sprint(*prm.FilterServerID))
+	}
+	if prm.FilterRoleID != nil {
+		q.Set("filterRoleID", fmt.Sprint(*prm.FilterRoleID))
+	}
+	if prm.FilterPkgID != nil {
+		q.Set("filterPkgID", fmt.Sprint(*prm.FilterPkgID))
+	}
+	if prm.FilterCpeID != nil {
+		q.Set("filterCpeID", fmt.Sprint(*prm.FilterCpeID))
+	}
+
+	tasks := []*Task{}
+	for i := 1; ; i++ {
+		if prm.Limit == 0 {
+			prm.Limit = 100
+		}
+		q.Set("limit", fmt.Sprint(prm.Limit))
+		q.Set("page", fmt.Sprint(i))
+
+		req.URL.RawQuery = q.Encode()
+		resp, err := c.Request(req)
+		defer closeResponse(resp)
+		if err != nil {
+			return nil, err
+		}
+		var res PagingTasks
+		err = json.NewDecoder(resp.Body).Decode(&res)
+		if err != nil {
+			return nil, err
+		}
+		tasks = append(tasks, res.Tasks...)
+		if uint(i) == res.Paging.TotalPage {
+			break
+		}
+	}
+	return tasks, nil
 }
 
 // AddTaskComment add task comment

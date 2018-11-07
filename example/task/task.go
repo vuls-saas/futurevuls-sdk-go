@@ -12,7 +12,7 @@ func main() {
 	client, err := fvuls.NewClientWithOptions(
 		os.Getenv("FVULS_API_KEY"),
 		os.Getenv("FVULS_RAW_URL"),
-		false,
+		true,
 	)
 	if err != nil {
 		panic(err)
@@ -75,12 +75,20 @@ func main() {
 	// pp.Println(t)
 
 	//-- set ignore
-	t, err := client.UpdateTaskIgnore(fvuls.UpdateTaskIgnoreParam{
-		TaskID:      556574,
-		IgnoreUntil: "vector",
+	// t, err := client.UpdateTaskIgnore(fvuls.UpdateTaskIgnoreParam{
+	// TaskID:      556574,
+	// IgnoreUntil: "vector",
+	// })
+	// if err != nil {
+	// panic(err)
+	// }
+	// pp.Println(t)
+
+	tasks, err := client.GetAllTaskList(fvuls.GetTaskListParam{
+		Limit: 1000,
 	})
 	if err != nil {
 		panic(err)
 	}
-	pp.Println(t)
+	pp.Println(len(tasks))
 }
