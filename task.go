@@ -60,20 +60,19 @@ func (c *Client) GetTaskList(prm GetTaskListParam) (*PagingTasks, error) {
 		q.Set("offset", fmt.Sprint(prm.Offset))
 	}
 	for _, p := range prm.FilterStatus {
-		q.Set("filterStatus", p)
+		q.Add("filterStatus", p)
 	}
 	for _, p := range prm.FilterPriority {
-		q.Set("filterPriority", p)
+		q.Add("filterPriority", p)
 	}
 	if prm.FilterIgnore != nil {
 		q.Set("filterIgnore", c.toJSON(prm.FilterIgnore))
 	}
 	for _, p := range prm.FilterMainUserIDs {
-		q.Set("filterMainUserIDs", fmt.Sprint(p))
+		q.Add("filterMainUserIDs", fmt.Sprint(p))
 	}
 	for _, p := range prm.FilterSubUserIDs {
-		// q.Set("filterSubUserIDs", c.toJSON(prm.FilterSubUserIDs))
-		q.Set("filterSubUserIDs", fmt.Sprint(p))
+		q.Add("filterSubUserIDs", fmt.Sprint(p))
 	}
 	if prm.FilterCveID != nil {
 		q.Set("filterCveID", fmt.Sprint(*prm.FilterCveID))
@@ -114,20 +113,20 @@ func (c *Client) GetAllTaskList(prm GetTaskListParam) ([]*Task, error) {
 	}
 	q := c.BaseURL.Query()
 	for _, p := range prm.FilterStatus {
-		q.Set("filterStatus", p)
+		q.Add("filterStatus", p)
 	}
 	for _, p := range prm.FilterPriority {
-		q.Set("filterPriority", p)
+		q.Add("filterPriority", p)
 	}
 	if prm.FilterIgnore != nil {
 		q.Set("filterIgnore", c.toJSON(prm.FilterIgnore))
 	}
 	for _, p := range prm.FilterMainUserIDs {
-		q.Set("filterMainUserIDs", fmt.Sprint(p))
+		q.Add("filterMainUserIDs", fmt.Sprint(p))
 	}
 	for _, p := range prm.FilterSubUserIDs {
 		// q.Set("filterSubUserIDs", c.toJSON(prm.FilterSubUserIDs))
-		q.Set("filterSubUserIDs", fmt.Sprint(p))
+		q.Add("filterSubUserIDs", fmt.Sprint(p))
 	}
 	if prm.FilterCveID != nil {
 		q.Set("filterCveID", fmt.Sprint(*prm.FilterCveID))
