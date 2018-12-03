@@ -30,17 +30,15 @@ func main() {
 	// pkgID := 100
 	// cpeID := 245
 
-	// cves, err := client.GetCveList(fvuls.GetCveListParam{
-	// Page:   1,
-	// Limit: 1,
-	// Offset: 3,
-	// FilterServerID: &serverID,
-	// FilterRoleID: &roleID,
-	// FilterPkgID: &pkgID,
-	// FilterCpeID: &cpeID,
-	// })
-	// if err != nil {
-	// panic(err)
-	// }
-	// pp.Println(len(cves.Cves))
+	cves, err := client.GetAllCveList(fvuls.GetCveListParam{
+		// FilterServerID: &serverID,
+		// FilterRoleID:   &roleID,
+		// FilterPkgID:    &pkgID,
+		// FilterCpeID:    &cpeID,
+	})
+	if err != nil {
+		panic(err)
+	}
+	pp.Println(cves)
+	pp.Println(len(cves))
 }

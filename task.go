@@ -42,68 +42,6 @@ func (c *Client) UpdateTask(prm UpdateTaskParam) (*Task, error) {
 	return &task, err
 }
 
-// GetTaskList get a list of tasks
-// https://doc.vuls.biz/#/task
-func (c *Client) GetTaskList(prm GetTaskListParam) (*PagingTasks, error) {
-	req, err := http.NewRequest("GET", c.urlFor("/v1/tasks").String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	q := c.BaseURL.Query()
-	if 0 < prm.Page {
-		q.Set("page", fmt.Sprint(prm.Page))
-	}
-	if 0 < prm.Limit {
-		q.Set("limit", fmt.Sprint(prm.Limit))
-	}
-	if 0 < prm.Offset {
-		q.Set("offset", fmt.Sprint(prm.Offset))
-	}
-	for _, p := range prm.FilterStatus {
-		q.Add("filterStatus", p)
-	}
-	for _, p := range prm.FilterPriority {
-		q.Add("filterPriority", p)
-	}
-	if prm.FilterIgnore != nil {
-		q.Set("filterIgnore", c.toJSON(prm.FilterIgnore))
-	}
-	for _, p := range prm.FilterMainUserIDs {
-		q.Add("filterMainUserIDs", fmt.Sprint(p))
-	}
-	for _, p := range prm.FilterSubUserIDs {
-		q.Add("filterSubUserIDs", fmt.Sprint(p))
-	}
-	if prm.FilterCveID != nil {
-		q.Set("filterCveID", fmt.Sprint(*prm.FilterCveID))
-	}
-	if prm.FilterServerID != nil {
-		q.Set("filterServerID", fmt.Sprint(*prm.FilterServerID))
-	}
-	if prm.FilterRoleID != nil {
-		q.Set("filterRoleID", fmt.Sprint(*prm.FilterRoleID))
-	}
-	if prm.FilterPkgID != nil {
-		q.Set("filterPkgID", fmt.Sprint(*prm.FilterPkgID))
-	}
-	if prm.FilterCpeID != nil {
-		q.Set("filterCpeID", fmt.Sprint(*prm.FilterCpeID))
-	}
-	req.URL.RawQuery = q.Encode()
-
-	resp, err := c.Request(req)
-	defer closeResponse(resp)
-	if err != nil {
-		return nil, err
-	}
-	var tasks PagingTasks
-	err = json.NewDecoder(resp.Body).Decode(&tasks)
-	if err != nil {
-		return nil, err
-	}
-	return &tasks, err
-}
-
 // GetAllTaskList get a list of tasks
 // https://doc.vuls.biz/#/task
 func (c *Client) GetAllTaskList(prm GetTaskListParam) ([]*Task, error) {
@@ -125,11 +63,10 @@ func (c *Client) GetAllTaskList(prm GetTaskListParam) ([]*Task, error) {
 		q.Add("filterMainUserIDs", fmt.Sprint(p))
 	}
 	for _, p := range prm.FilterSubUserIDs {
-		// q.Set("filterSubUserIDs", c.toJSON(prm.FilterSubUserIDs))
 		q.Add("filterSubUserIDs", fmt.Sprint(p))
 	}
 	if prm.FilterCveID != nil {
-		q.Set("filterCveID", fmt.Sprint(*prm.FilterCveID))
+		q.Set("filterCveID", *prm.FilterCveID)
 	}
 	if prm.FilterServerID != nil {
 		q.Set("filterServerID", fmt.Sprint(*prm.FilterServerID))
@@ -147,7 +84,7 @@ func (c *Client) GetAllTaskList(prm GetTaskListParam) ([]*Task, error) {
 	tasks := []*Task{}
 	for i := 1; ; i++ {
 		if prm.Limit == 0 {
-			prm.Limit = 100
+			prm.Limit = 1000
 		}
 		q.Set("limit", fmt.Sprint(prm.Limit))
 		q.Set("page", fmt.Sprint(i))

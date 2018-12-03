@@ -17,23 +17,24 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// task, err := client.GetTaskDetail(fvuls.GetTaskDetailParam{
-	// TaskID: 556574,
+	// cpeID := 448
+	// pkgCpe, err := client.GetCpeDetail(fvuls.GetCpeDetailParam{
+	// CpeID: cpeID,
 	// })
 	// if err != nil {
 	// panic(err)
 	// }
-	// pp.Println(task)
+	// pp.Println(pkgCpe)
 
-	// pri := "high"
-	// t, err := client.UpdateTask(fvuls.UpdateTaskParam{
-	// TaskID:   556574,
-	// Priority: &pri,
+	// pkgID := 2610003
+	// pkgCpe, err := client.GetPkgDetail(fvuls.GetPkgDetailParam{
+	// PkgID: pkgID,
 	// })
+
 	// if err != nil {
 	// panic(err)
 	// }
-	// pp.Println(t)
+	// pp.Println(pkgCpe)
 
 	// serverID := 9315
 	// roleID := 105
@@ -64,31 +65,24 @@ func main() {
 	// pp.Println(tasks)
 	// pp.Println(len(tasks.Tasks))
 
-	//-- add comments
-	t, err := client.AddTaskComment(fvuls.AddTaskCommentParam{
-		TaskID:         556574,
-		CommentContent: "commentおupdateしますた",
+	// cveID := "CVE-2016-7117"
+	// taskID := 556578
+	// serverID := 9315
+	roleID := 1311
+	pkgCpes, err := client.GetAllPkgCpeList(fvuls.GetPkgCpeListParam{
+		Limit: 1000,
+		// FilterCveID: &cveID,
+		// FilterTaskID: &taskID,
+		// FilterServerID: &serverID,
+		FilterRoleID: &roleID,
 	})
 	if err != nil {
 		panic(err)
 	}
-	pp.Println(t)
-
-	//-- set ignore
-	// t, err := client.UpdateTaskIgnore(fvuls.UpdateTaskIgnoreParam{
-	// TaskID:      556574,
-	// IgnoreUntil: "vector",
-	// })
-	// if err != nil {
-	// panic(err)
-	// }
-	// pp.Println(t)
-
-	// tasks, err := client.GetAllTaskList(fvuls.GetTaskListParam{
-	// Limit: 1000,
-	// })
-	// if err != nil {
-	// panic(err)
-	// }
-	// pp.Println(len(tasks))
+	// pp.Println(pkgCpes)
+	for _, p := range pkgCpes {
+		// if len(p.Tasks) != 0 {
+		pp.Println(p)
+		// }
+	}
 }

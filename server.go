@@ -26,42 +26,48 @@ func (c *Client) GetServerDetail(prm GetServerDetailParam) (*Server, error) {
 	return &server, err
 }
 
-// GetServerList get a list of servers
+// GetAllServerList get a list of servers
 // https://doc.vuls.biz/#/servers
-func (c *Client) GetServerList(prm GetServerListParam) (*PagingServers, error) {
+func (c *Client) GetAllServerList(prm GetServerListParam) ([]*Server, error) {
 	req, err := http.NewRequest("GET", c.urlFor("/v1/servers").String(), nil)
 	if err != nil {
 		return nil, err
 	}
 	q := c.BaseURL.Query()
-	if 0 < prm.Page {
-		q.Set("page", fmt.Sprint(prm.Page))
-	}
-	if 0 < prm.Limit {
-		q.Set("limit", fmt.Sprint(prm.Limit))
-	}
-	if 0 < prm.Offset {
-		q.Set("offset", fmt.Sprint(prm.Offset))
-	}
 	if prm.FilterCveID != nil {
-		q.Set("filterCveID", c.toJSON(*prm.FilterCveID))
+		q.Set("filterCveID", *prm.FilterCveID)
 	}
 	if prm.FilterRoleID != nil {
 		q.Set("filterRoleID", fmt.Sprint(*prm.FilterRoleID))
 	}
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.Request(req)
-	defer closeResponse(resp)
-	if err != nil {
-		return nil, err
+	servers := []*Server{}
+	for i := 1; ; i++ {
+		if prm.Limit == 0 {
+			prm.Limit = 1000
+		}
+		q.Set("limit", fmt.Sprint(prm.Limit))
+		q.Set("page", fmt.Sprint(i))
+
+		req.URL.RawQuery = q.Encode()
+		resp, err := c.Request(req)
+		defer closeResponse(resp)
+		if err != nil {
+			return nil, err
+		}
+		var res PagingServers
+		err = json.NewDecoder(resp.Body).Decode(&res)
+		if err != nil {
+			return nil, err
+		}
+		servers = append(servers, res.Servers...)
+		if uint(i) == res.Paging.TotalPage {
+			break
+		}
 	}
-	var servers PagingServers
-	err = json.NewDecoder(resp.Body).Decode(&servers)
-	if err != nil {
-		return nil, err
-	}
-	return &servers, err
+	return servers, nil
+
 }
 
 // UpdateServer updates Server
@@ -126,44 +132,6 @@ type GetServerDetailParam struct {
 	ServerID string
 }
 
-// Server is the result type of the server service getServerDetail method.
-type Server struct {
-	// ID of server
-	ID int `json:"id"`
-	// UUID of server
-	ServerUUID string
-	// UUID of server
-	HostUUID string
-	// Name of server
-	ServerName string
-	// ID of server role
-	ServerroleID int
-	// Name of server role
-	ServerroleName string
-	// OS Name of server
-	OsFamily string
-	// OS Version of server
-	OsVersion string
-	// Whether server needs kernel restart
-	NeedKernelRestart bool
-	// default user ID of server
-	DefaultUserID *int
-	// default user name of server
-	DefaultUserName *string
-	// last scanned time of server
-	LastScannedAt *string `json:"lastScannedAt,omitempty"`
-	// last uploaded time of server
-	LastUploadedAt *string `json:"lastUploadedAt,omitempty"`
-	// tags is list of server tag
-	Tags []*ServerTag `json:"tags,omitempty"`
-	// tasks of server
-	Tasks []*ChildTask `json:"tasks,omitempty"`
-	// crated time of server
-	CreatedAt string
-	// updated time of server
-	UpdatedAt string
-}
-
 // UpdateServerParam is the payload type of the server service updateServer
 // method.
 type UpdateServerParam struct {
@@ -186,12 +154,4 @@ type DeleteServerParam struct {
 	Key *string
 	// Server ID
 	ServerID int
-}
-
-// ServerTag describes a server tag
-type ServerTag struct {
-	// ID of server tag
-	ID int
-	// Name of server tag
-	Name string
 }

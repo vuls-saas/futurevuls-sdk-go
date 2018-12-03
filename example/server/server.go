@@ -30,7 +30,7 @@ func main() {
 	// pkgID := 100
 	// cpeID := 245
 
-	servers, err := client.GetServerList(fvuls.GetServerListParam{})
+	servers, err := client.GetAllServerList(fvuls.GetServerListParam{})
 	// Page:   1,
 	// Limit: 1,
 	// Offset: 3,
@@ -44,11 +44,11 @@ func main() {
 	}
 	pp.Println(servers)
 
-	s := "c7-2-1"
-	server, err := client.UpdateServer(fvuls.UpdateServerParam{
-		ServerID:   14443,
-		ServerName: &s,
-	})
+	// s := "c7-2-1"
+	// server, err := client.UpdateServer(fvuls.UpdateServerParam{
+	// ServerID:   14443,
+	// ServerName: &s,
+	// })
 	// Page:   1,
 	// Limit: 1,
 	// Offset: 3,
@@ -57,15 +57,15 @@ func main() {
 	// FilterPkgID: &pkgID,
 	// FilterCpeID: &cpeID,
 	// })
-	if err != nil {
-		panic(err)
-	}
-	pp.Println(server.ServerName)
+	// if err != nil {
+	// panic(err)
+	// }
+	// pp.Println(server.ServerName)
 
-	err = client.DeleteServer(fvuls.DeleteServerParam{
-		ServerID: 13323,
-	})
-	if err != nil {
-		panic(err)
-	}
+	// err = client.DeleteServer(fvuls.DeleteServerParam{
+	// ServerID: 13323,
+	// })
+	// if err != nil {
+	// panic(err)
+	// }
 }

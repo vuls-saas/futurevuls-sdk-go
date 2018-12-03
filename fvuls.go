@@ -51,9 +51,7 @@ func (c *Client) urlFor(path string) *url.URL {
 	if err != nil {
 		panic("invalid url passed")
 	}
-
 	newURL.Path = path
-
 	return newURL
 }
 

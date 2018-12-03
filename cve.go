@@ -26,23 +26,14 @@ func (c *Client) GetCveDetail(prm GetCveDetailParam) (*Cve, error) {
 	return &cve, err
 }
 
-// GetCveList get a list of CVE
+// GetAllCveList get a list of CVE
 // https://doc.vuls.biz/#/cve/cve#getCveDetail
-func (c *Client) GetCveList(prm GetCveListParam) (*PagingCves, error) {
+func (c *Client) GetAllCveList(prm GetCveListParam) ([]*Cve, error) {
 	req, err := http.NewRequest("GET", c.urlFor("/v1/cves").String(), nil)
 	if err != nil {
 		return nil, err
 	}
 	q := c.BaseURL.Query()
-	if 0 < prm.Page {
-		q.Set("page", fmt.Sprint(prm.Page))
-	}
-	if 0 < prm.Limit {
-		q.Set("limit", fmt.Sprint(prm.Limit))
-	}
-	if 0 < prm.Offset {
-		q.Set("offset", fmt.Sprint(prm.Offset))
-	}
 	if prm.FilterServerID != nil {
 		q.Set("filterServerID", fmt.Sprint(*prm.FilterServerID))
 	}
@@ -57,17 +48,31 @@ func (c *Client) GetCveList(prm GetCveListParam) (*PagingCves, error) {
 	}
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.Request(req)
-	defer closeResponse(resp)
-	if err != nil {
-		return nil, err
+	cves := []*Cve{}
+	for i := 1; ; i++ {
+		if prm.Limit == 0 {
+			prm.Limit = 1000
+		}
+		q.Set("limit", fmt.Sprint(prm.Limit))
+		q.Set("page", fmt.Sprint(i))
+
+		req.URL.RawQuery = q.Encode()
+		resp, err := c.Request(req)
+		defer closeResponse(resp)
+		if err != nil {
+			return nil, err
+		}
+		var res PagingCves
+		err = json.NewDecoder(resp.Body).Decode(&res)
+		if err != nil {
+			return nil, err
+		}
+		cves = append(cves, res.Cves...)
+		if uint(i) == res.Paging.TotalPage {
+			break
+		}
 	}
-	var cves PagingCves
-	err = json.NewDecoder(resp.Body).Decode(&cves)
-	if err != nil {
-		return nil, err
-	}
-	return &cves, err
+	return cves, nil
 }
 
 // GetCveListParam is the payload type of the cve service getCveList method.
