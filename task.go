@@ -6,6 +6,34 @@ import (
 	"net/http"
 )
 
+const (
+	New           = "new"
+	Investigating = "investigating"
+	Ongoing       = "ongoing"
+	Workaround    = "workaround"
+	PatchApplied  = "patch_applied"
+)
+
+var allTaskStatus = []string{New, Investigating, Ongoing, Workaround, PatchApplied}
+
+const (
+	none   = "now"
+	high   = "high"
+	medium = "medium"
+	low    = "low"
+)
+
+var allPriority = []string{none, high, medium, low}
+
+func validateParam(available []string, val string) error {
+	for _, s := range available {
+		if val == s {
+			return nil
+		}
+	}
+	return fmt.Errorf("Invalid task status: %s", val)
+}
+
 // GetTaskDetail get TaskDetail
 // https://doc.vuls.biz/#/task
 func (c *Client) GetTaskDetail(prm GetTaskDetailParam) (*Task, error) {
@@ -44,6 +72,7 @@ func (c *Client) UpdateTask(prm UpdateTaskParam) (*Task, error) {
 
 // GetAllTaskList get a list of tasks
 // https://doc.vuls.biz/#/task
+// Default value of filterStatus: List[ "new", "investigating", “ongoing” ]
 func (c *Client) GetAllTaskList(prm GetTaskListParam) ([]*Task, error) {
 	req, err := http.NewRequest("GET", c.urlFor("/v1/tasks").String(), nil)
 	if err != nil {
@@ -51,9 +80,15 @@ func (c *Client) GetAllTaskList(prm GetTaskListParam) ([]*Task, error) {
 	}
 	q := c.BaseURL.Query()
 	for _, p := range prm.FilterStatus {
+		if err := validateParam(allTaskStatus, p); err != nil {
+			return nil, err
+		}
 		q.Add("filterStatus", p)
 	}
 	for _, p := range prm.FilterPriority {
+		if err := validateParam(allPriority, p); err != nil {
+			return nil, err
+		}
 		q.Add("filterPriority", p)
 	}
 	if prm.FilterIgnore != nil {

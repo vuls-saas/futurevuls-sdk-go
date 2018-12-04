@@ -40,39 +40,39 @@ func main() {
 	// pkgID := 100
 	// cpeID := 245
 	// ignore := true
-	// stats := []string{
-	// "patch_applied",
-	// "new",
-	// }
+	stats := []string{
+		"patch_applied",
+		"new",
+	}
 
-	// tasks, err := client.GetTaskList(fvuls.GetTaskListPayload{
-	// // Page:   1,
-	// // Limit: 1,
-	// // Offset: 3,
-	// FilterStatus: stats,
-	// // FilterServerID: &serverID,
-	// // // FilterRoleID: &roleID,
-	// // // FilterPkgID: &pkgID,
-	// // // FilterCpeID: &cpeID,
+	priorities := []string{
+		"high",
+	}
 
-	// // FilterIgnore: &ignore,
-	// // FilterMainUserIDs: []int{112},
-	// })
-	// if err != nil {
-	// panic(err)
-	// }
-	// pp.Println(tasks)
-	// pp.Println(len(tasks.Tasks))
-
-	//-- add comments
-	t, err := client.AddTaskComment(fvuls.AddTaskCommentParam{
-		TaskID:         556574,
-		CommentContent: "commentおupdateしますた",
+	tasks, err := client.GetAllTaskList(fvuls.GetTaskListParam{
+		FilterStatus:   stats,
+		FilterPriority: priorities,
+		// FilterServerID: &serverID,
+		// FilterRoleID: &roleID,
+		// FilterPkgID: &pkgID,
+		// FilterCpeID: &cpeID,
+		// FilterIgnore: &ignore,
+		// FilterMainUserIDs: []int{112},
 	})
 	if err != nil {
 		panic(err)
 	}
-	pp.Println(t)
+	pp.Println(tasks)
+
+	//-- add comments
+	// t, err := client.AddTaskComment(fvuls.AddTaskCommentParam{
+	// TaskID:         556574,
+	// CommentContent: "commentおupdateしますた",
+	// })
+	// if err != nil {
+	// panic(err)
+	// }
+	// pp.Println(t)
 
 	//-- set ignore
 	// t, err := client.UpdateTaskIgnore(fvuls.UpdateTaskIgnoreParam{
@@ -84,11 +84,4 @@ func main() {
 	// }
 	// pp.Println(t)
 
-	// tasks, err := client.GetAllTaskList(fvuls.GetTaskListParam{
-	// Limit: 1000,
-	// })
-	// if err != nil {
-	// panic(err)
-	// }
-	// pp.Println(len(tasks))
 }
